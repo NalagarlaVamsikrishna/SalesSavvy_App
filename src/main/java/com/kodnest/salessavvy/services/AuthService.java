@@ -4,6 +4,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -82,6 +83,34 @@ public class AuthService {
 		JWTToken jwtToken = new JWTToken(user, token, LocalDateTime.now().plusHours(1));
 		jwtTokenRepo.save(jwtToken);
 		
+	}
+
+	public boolean validateToken(String token) {
+		
+		try {
+			System.out.println("VAALIDATING TOKEN...");
+			
+			//  Parse and validate the token
+			Jwts.parserBuilder().setSigningKey(SIGNING_KEY).build().parseClaimsJws(token);
+			
+			// Check if the token exists in the database and is not expired
+			Optional<JWTToken> jwtToken = jwtTokenRepo.findByToken(token);
+			if(jwtToken.isPresent()) {
+				System.out.println("Token Expiry: " + jwtToken.get().getExpiresAt());
+				System.out.println("Current Time: " + LocalDateTime.now());
+				return jwtToken.get().getExpiresAt().isAfter(LocalDateTime.now());
+			}
+			
+			return false;
+		}
+		catch (Exception e) {
+			System.out.println("Token validation failed: " + e.getMessage());
+			return  false;
+		}
+	}
+
+	public String extractUsername(String token) {
+		return Jwts.parserBuilder().setSigningKey(SIGNING_KEY).build().parseClaimsJws(token).getBody().getSubject();
 	}
 
 	
