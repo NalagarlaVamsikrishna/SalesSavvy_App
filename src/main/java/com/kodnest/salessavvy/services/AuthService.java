@@ -88,7 +88,7 @@ public class AuthService {
 	public boolean validateToken(String token) {
 		
 		try {
-			System.out.println("VAALIDATING TOKEN...");
+			System.out.println("VALIDATING TOKEN...");
 			
 			//  Parse and validate the token
 			Jwts.parserBuilder().setSigningKey(SIGNING_KEY).build().parseClaimsJws(token);
