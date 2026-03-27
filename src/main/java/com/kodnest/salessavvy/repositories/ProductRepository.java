@@ -12,4 +12,7 @@ import com.kodnest.salessavvy.entities.Product;
 public interface ProductRepository extends JpaRepository<Product, Integer> {
 	@Query("SELECT p.category.categoryName FROM Product p WHERE p.productId = :productId")
 	List<Product> findByCategory_CategoryId(Integer categoryId);
+	
+	@Query("SELECT p.category.categoryName FROM Product p WHERE p.productId = :productId")
+	String findCategoryNameByProductId(int productId);
 }

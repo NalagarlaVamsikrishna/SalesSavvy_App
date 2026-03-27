@@ -45,6 +45,7 @@ public class AuthService {
 		this.SIGNING_KEY = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));	
 	}
 	
+	
 	public User authenticate(String username, String password) {
 		User user = userRepo.findByUsername(username).orElseThrow(() -> new RuntimeException("Invalid username or password"));
 		
@@ -113,6 +114,15 @@ public class AuthService {
 		return Jwts.parserBuilder().setSigningKey(SIGNING_KEY).build().parseClaimsJws(token).getBody().getSubject();
 	}
 
+	public void logout(User user) {
+		int userId = user.getUserId();
+		
+		JWTToken token = jwtTokenRepo.findByUserId(userId);
+		
+		if(token != null) {
+			jwtTokenRepo.deleteByUserId(userId);
+		}
+	}
 	
 	
 	
